@@ -1,0 +1,33 @@
+{
+	"name": "seiner-client",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"license": "MIT",
+	"main": "src/main.tsx",
+	"author": {
+		"name": "jaacko-torus",
+		"email": "jaacko.torus@gmail.com",
+		"url": "https://github.com/jaacko-torus"
+	},
+	"engines": {
+		"node": "18.6.0"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"no-darkreader": "^1.0.3",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.15",
+		"@types/react-dom": "^18.0.6",
+		"@vitejs/plugin-react": "^2.0.0",
+		"typescript": "^4.6.4",
+		"vite": "^3.0.0"
+	}
+}
