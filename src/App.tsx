@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import reactLogo from "./assets/react.svg"
 import "./App.css"
 import dayjs from "dayjs"
@@ -9,10 +9,11 @@ import Chat from "./components/Chat"
 
 const App = () => {
     const [theme, setTheme] = useState<Theme>("dark")
-	const username = window.prompt("what is your username") ?? ""
+	const [username, setUsername] = useState(() => window.prompt("what is your username") ?? "")
 	
 	const changeTheme = (theme: Theme) => {
 		const vars = themes[theme].vars
+		// TODO: style prop is not part of `Element`? Even though I can use it.
 		const $root: Element & { style: { setProperty: (name: string, value: string) => void } } =
 			document.querySelector(":root")!
 		const set_property = ([name, value]: [string, string]) => $root.style.setProperty(name, value)
@@ -32,7 +33,6 @@ const App = () => {
 	return (
         <>
             <button id="toggle_theme" onClick={e => changeTheme(toggleTheme(theme))}></button>
-			
             <Chat username={username}/>
         </>
 	)
