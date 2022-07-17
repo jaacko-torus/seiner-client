@@ -15,6 +15,9 @@ export default defineConfig({
 		devSourcemap: true,
 	},
 	build: {
-		sourcemap: true
+		sourcemap: true,
+		watch: {
+			include: ["src", "package.json", "tsconfig.json"]
+		},
 	}
 })
