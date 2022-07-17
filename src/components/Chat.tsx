@@ -1,10 +1,15 @@
-import React, { useRef, useState } from "react"
+import React, { createRef, useEffect, useRef, useState } from "react"
 import MessagingArea from "./MessagingArea"
 import Message from "./Message"
 import { audio } from "../globals"
 import dayjs from "dayjs"
 
-export function createWebSocket(username: string, setMessages: React.Dispatch<React.SetStateAction<JSX.Element[]>>) {
+type M = ReturnType<typeof Message>
+
+export function createWebSocket(username: string, setMessages: React.Dispatch<React.SetStateAction<M[]>>) {
+	//, messages: React.MutableRefObject<M[]>) {
+	//setMessages: React.Dispatch<React.SetStateAction<M[]>>) {
+		
 	type WSMessageType = "message" | "user_joined" | "user_left"
 	
 	type WSMessageDataDefault = { username: string, timestamp: string }
@@ -18,17 +23,17 @@ export function createWebSocket(username: string, setMessages: React.Dispatch<Re
     const events = {
         onmessage: (event: MessageEvent<string>) => {
             const wsMessage: WSMessage = JSON.parse(event.data)
-
+			
             const events: Record<WSMessageType, (data: WSMessageData) => ReturnType<typeof Message>> = {
-                "message": (data: WSMessageDataMessage) =>
-                    <Message username={data.username} timestamp={data.timestamp} body={data.message}/>,
-                "user_joined": (data: WSMessageDataUserJoined) =>
-                    <Message username="[server]" timestamp={data.timestamp} body={`${data.username} has joined`}/>,
-                "user_left": (data: WSMessageDataUserLeft) =>
-                    <Message username="[server]" timestamp={data.timestamp} body={`${data.username} has left`}/>,
+                "message": ({username, timestamp, message}: WSMessageDataMessage) =>
+                    <Message username={username} timestamp={timestamp} body={message}/>,
+                "user_joined": ({username, timestamp}: WSMessageDataUserJoined) =>
+                    <Message username="[server]" timestamp={timestamp} body={`${username} has joined`}/>,
+                "user_left": ({username, timestamp}: WSMessageDataUserLeft) =>
+                    <Message username="[server]" timestamp={timestamp} body={`${username} has left`}/>,
             }
 
-			const poke = wsMessage.data.message.match(new RegExp(`\/poke ${username}`))?.length === 1
+			const poke = (wsMessage.data.message?.match(new RegExp(`\/poke ${username}`))?.length ?? 0) === 1
 			const messageNotFromThisUser = wsMessage.data.username !== username
 			
 			if (poke) {
@@ -37,12 +42,18 @@ export function createWebSocket(username: string, setMessages: React.Dispatch<Re
 				audio["message-received"].play()
 			}
 			
+			console.log("received?")
+			
+			//messages.current.push(events[wsMessage.type](wsMessage.data))
             setMessages(messages => [...messages, events[wsMessage.type](wsMessage.data)])
         },
         onopen: (event: Event) => {
+			// const ref = useRef<HTMLDivElement>(null)
+			
+			// messages.current.push(<Message username="[server]" timestamp={dayjs().format("hh:mma")} body="[open] Connection established"/>)
             setMessages(messages => [
                 ...messages,
-                <Message username="[server]" timestamp={dayjs().format("hh:mma")} body="[open] Connection established"/>
+				<Message username="[server]" timestamp={dayjs().format("hh:mma")} body="[open] Connection established"/>
             ])
         },
         onclose: (event: CloseEvent) => {
@@ -69,44 +80,20 @@ export function createWebSocket(username: string, setMessages: React.Dispatch<Re
 
 export interface Args { username: string }
 const Chat = ({ username }: Args) => {
-	const [messages, setMessages] = useState<(ReturnType<typeof Message>)[]>([])
+	const [messages, setMessages] = useState<M[]>([])
 	const messagingDataRef = useRef<HTMLTextAreaElement>(null)
-	const socket = createWebSocket(username, setMessages)
+	
+	const [socket] = useState(() => createWebSocket(username, setMessages))
 
-	const sendData = (socket: WebSocket) => (data = "") => {
-		const $messaging_data = messagingDataRef.current
-		if ($messaging_data === null)
-			return
-
-		// store temporary copy
-		const body = $messaging_data.value
-		$messaging_data.value = ""
-
-		const val = [data.trim(), body.trim()].find(e => e !== "")
-
-		if (val === undefined)
-			return
-
-		socket.send(val)
-	}
-
-	const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-		if (e.key === "Enter" && document.activeElement === messagingDataRef.current) {
-			sendData(socket)()
-		}
-
-		if (e.key === "Escape") {
-			messagingDataRef.current?.blur()
-		}
-
-		// what is this true about?
-		return true
+	const sendData = (data: string) => {
+		socket.send(data)
+		console.log("something happening?")
 	}
 
 	return (
-		<main id="chat" onKeyDown={onKeyDown}>
+		<main id="chat">
 			<div id="chat_area">{messages}</div>
-			<MessagingArea messagingDataRef={messagingDataRef} />
+			<MessagingArea sendData={sendData} messagingDataRef={messagingDataRef} />
 		</main>
 	)
 }
