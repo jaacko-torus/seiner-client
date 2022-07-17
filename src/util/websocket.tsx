@@ -1,5 +1,4 @@
 import dayjs from "dayjs"
-import React from "react"
 import { audio } from "../globals"
 
 export function websocketCloseEventReasonHandler(code: number) {
@@ -33,7 +32,7 @@ export function websocketCloseEventReasonHandler(code: number) {
 		1015:
 			"The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified)."
 	}
-	
+
 	return (reasonMapper[code] ?? "Unknown reason.") + "\nFor more information, see https://www.rfc-editor.org/rfc/rfc6455#section-7.4.1."
 }
 
@@ -41,12 +40,12 @@ export type WSEvent = { username: string, timestamp: string }
 export type WSEventComplete = WSEvent & { messages: string[] }
 
 export type WSEventRecord = {
-	"user_joined" : WSEvent
-	"user_left"   : WSEvent
-	"message"     : WSEventComplete
-	"open"        : WSEventComplete
-	"close"       : WSEventComplete
-	"error"       : WSEventComplete
+	"user_joined": WSEvent
+	"user_left": WSEvent
+	"message": WSEventComplete
+	"open": WSEventComplete
+	"close": WSEventComplete
+	"error": WSEventComplete
 }
 
 export type WSMessage = {
@@ -59,31 +58,31 @@ export type WSMessageComplete = {
 
 export function createWebsocket(username: string, setMessages: (value: (prevState: WSMessageComplete[]) => WSMessageComplete[]) => void) {
 	type Events = {
-		onmessage : (event: MessageEvent<string>) => void
-		onopen    : (event: Event) => void
-		onclose   : (event: CloseEvent) => void
-		onerror   : (event: Event) => void
+		onmessage: (event: MessageEvent<string>) => void
+		onopen: (event: Event) => void
+		onclose: (event: CloseEvent) => void
+		onerror: (event: Event) => void
 	}
-	
-    const events: Events = {
-        onmessage: (event) => {
-            const message: WSMessage = JSON.parse(event.data)
-			
+
+	const events: Events = {
+		onmessage: (event) => {
+			const message: WSMessage = JSON.parse(event.data)
+
 			switch (message.type) {
 				case "message":
 					const poked = (message.data.messages.at(0)?.match(new RegExp(`\/poke ${username}`))?.length ?? 0) === 1
 					const messageNotFromThisUser = message.data.username !== username
-					
+
 					if (poked) {
 						audio["poke"].play()
 					} else if (messageNotFromThisUser) {
 						audio["message-received"].play()
 					}
-					
+
 					return setMessages(messages => [...messages, message])
 				case "user_left":
 				case "user_joined":
-					const action = { user_left: "left", user_joined: "joined" }	
+					const action = { user_left: "left", user_joined: "joined" }
 					return {
 						type: message.type,
 						data: {
@@ -96,8 +95,8 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 					// Will never happen
 					return
 			}
-        },
-        onopen: (event) => setMessages(messages => [...messages, {
+		},
+		onopen: (event) => setMessages(messages => [...messages, {
 			type: "open",
 			data: {
 				username: "[server]",
@@ -105,7 +104,7 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 				messages: ["[open] Connection established"]
 			}
 		}]),
-        onclose: (event) => setMessages(messages => [...messages, {
+		onclose: (event) => setMessages(messages => [...messages, {
 			type: "close",
 			data: {
 				username: "[server]",
@@ -117,7 +116,7 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 				]
 			}
 		}]),
-        onerror: (error) => setMessages(messages => [...messages, {
+		onerror: (error) => setMessages(messages => [...messages, {
 			type: "error",
 			data: {
 				username: "[server]",
@@ -125,13 +124,13 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 				messages: ["[error]"]
 			}
 		}])
-    }
+	}
 
-    const socket = new WebSocket(`ws://${window.location.hostname}:8081/greeter?username=${username}`)
-    socket.onmessage = events.onmessage
-    socket.onopen = events.onopen
-    socket.onclose = events.onclose
-    socket.onerror = events.onerror
-	
-    return socket
+	const socket = new WebSocket(`ws://${window.location.hostname}:8081/greeter?username=${username}`)
+	socket.onmessage = events.onmessage
+	socket.onopen = events.onopen
+	socket.onclose = events.onclose
+	socket.onerror = events.onerror
+
+	return socket
 }
