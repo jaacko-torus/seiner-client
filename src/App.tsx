@@ -1,11 +1,36 @@
-import React, {useEffect, useState} from "react"
-import reactLogo from "./assets/react.svg"
-import "./App.css"
-import dayjs from "dayjs"
-import Message from "./components/Message"
-import {audio, Theme, themes} from "./globals"
-import { css } from "@emotion/css"
+import {useState} from "react"
+import {Theme, themes} from "./globals"
 import Chat from "./components/Chat"
+import styled from "@emotion/styled"
+
+const Root = styled.div({
+    backgroundColor: "var(--background-color)",
+    color: "var(--foreground-color)",
+    fontFamily: "\"Montserrat\", sans-serif",
+    fontWeight: "var(--font-weight-normal)",
+    padding: "1em",
+    height: "calc(100% - 2em)",
+    display: "grid",
+	// textAlign: "initial",
+    gridTemplate: "\"chat\" 1fr / 100%",
+})
+
+const ToggleTheme = styled.button({
+	position: "absolute",
+    right: "1em",
+    backgroundColor: "var(--background-color)",
+    width: "50px",
+    height: "50px",
+    border: "var(--foreground-color) 2px solid",
+    borderRadius: "100%",
+    boxShadow: "0 0 var(--background-color)",
+    transition: "500ms linear",
+	":hover": {
+		cursor: "pointer",
+		backgroundColor: "var(--foreground-color)",
+		boxShadow: "3px 4px var(--border-unfocused)",
+	},
+})
 
 const App = () => {
     const [theme, setTheme] = useState<Theme>("dark")
@@ -31,10 +56,10 @@ const App = () => {
 	}
 	
 	return (
-        <>
-            <button id="toggle_theme" onClick={e => changeTheme(toggleTheme(theme))}></button>
+        <Root>
+            <ToggleTheme onClick={e => changeTheme(toggleTheme(theme))}></ToggleTheme>
             <Chat username={username}/>
-        </>
+        </Root>
 	)
 }
 

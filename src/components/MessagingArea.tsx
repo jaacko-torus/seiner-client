@@ -1,4 +1,52 @@
-import React, { useRef, useState } from "react";
+import { css } from "@emotion/react"
+import styled from "@emotion/styled"
+import React, { useRef, useState } from "react"
+
+const Root = styled.div({
+	marginTop: "1.5em",
+	marginLeft: "0.5em",
+	borderTop: "var(--foreground-color) 1px dashed",
+	paddingTop: "2em",
+})
+
+const Label = styled.label({
+	display: "flex",
+	gap: "0.5em"
+})
+
+const TextArea = styled.textarea({
+	backgroundColor: "var(--background-color)",
+	color: "var(--border-unfocused)",
+	outline: "none",
+	border: "var(--foreground-color) 1px solid",
+	padding: "1ex",
+	fontSize: "inherit",
+	fontWeight: "inherit",
+	fontFamily: "inherit",
+	margin: "0",
+	flexGrow: "11",
+	resize: "none",
+	":hover": {
+		outline: "var(--foreground-color) 1px solid",
+	},
+	"&:focus": {
+		outline: "var(--foreground-color) 1px solid",
+		color: "var(--foreground-color)",
+	}
+})
+
+const Button = styled.button({
+	backgroundColor: "var(--background-color)",
+	color: "var(--foreground-color)",
+	border: "var(--foreground-color) 1px solid",
+	padding: "1ex 1em",
+	margin: "0",
+	flexGrow: "1",
+	":focus, :hover": {
+		outline: "var(--foreground-color) 1px solid",
+		cursor: "pointer",
+	}
+})
 
 export interface Args { sendData: (data: string) => void }
 const MessagingArea = ({ sendData }: Args) => {
@@ -23,11 +71,10 @@ const MessagingArea = ({ sendData }: Args) => {
 	}
 
 	return (
-		<div id="messaging_area">
-			<label>
-				<textarea
+		<Root>
+			<Label>
+				<TextArea
 					ref={ref}
-					id="messaging_data"
 					minLength={1}
 					maxLength={200}
 					placeholder="Type a message"
@@ -35,10 +82,10 @@ const MessagingArea = ({ sendData }: Args) => {
 					value={value}
 					onKeyDown={onKeyDown}
 					onChange={e => setValue(e.target.value ?? "")}
-				></textarea>
-				<button id="messaging_button">Send</button>
-			</label>
-		</div>
+				></TextArea>
+				<Button>Send</Button>
+			</Label>
+		</Root>
 	)
 }
 

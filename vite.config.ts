@@ -19,6 +19,6 @@ export default defineConfig({
 		watch: {
 			include: ["src", "package.json", "tsconfig.json"]
 		},
-		// minify: false,
+		minify: false,
 	}
 })
