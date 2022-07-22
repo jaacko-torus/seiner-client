@@ -1,3 +1,4 @@
+import { hocon } from "hocon-web"
 import dayjs from "dayjs"
 import { audio } from "../globals"
 
@@ -56,7 +57,7 @@ export type WSMessageComplete = {
 	[Type in keyof WSEventRecord]: { type: Type, data: WSEventComplete }
 }[keyof WSEventRecord]
 
-export function createWebsocket(username: string, setMessages: (value: (prevState: WSMessageComplete[]) => WSMessageComplete[]) => void) {
+export async function createWebsocket(username: string, setMessages: (value: (prevState: WSMessageComplete[]) => WSMessageComplete[]) => void) {
 	type Events = {
 		onmessage: (event: MessageEvent<string>) => void
 		onopen: (event: Event) => void
@@ -128,12 +129,28 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 			}
 		}])
 	}
+	
+	const instance = await hocon()
+	const applicationConfFile = await fetch("./resources/application.conf")
+	const applicationConfSource = await applicationConfFile.text()
+	const application = new instance.Config(applicationConfSource)
+	application.setRenderComments(false)
+	application.setRenderOriginComments(false)
+	application.setRenderFormatted(false)
+	
+	type ApplicationJSON = {seiner: { mode: "dev" | "prod", modes: {[key in "dev" | "prod"]:{port:{ws: number}}}}}
+	const applicationJSON: ApplicationJSON | undefined = JSON.parse(application.toJSON() ?? "undefined") ?? undefined
+	console.log(applicationJSON)
+	const mode: "dev" | "prod" | undefined = applicationJSON?.seiner.mode
+	const portWS = (mode && applicationJSON?.seiner.modes[mode].port.ws) ?? 8081
 
-	const socket = new WebSocket(`ws://${window.location.hostname}:8081/greeter?username=${username}`)
+	const socket = new WebSocket(`ws://${window.location.hostname}:${portWS}/greeter?username=${username}`)
 	socket.onmessage = events.onmessage
 	socket.onopen = events.onopen
 	socket.onclose = events.onclose
 	socket.onerror = events.onerror
+	
+	application.delete()
 
 	return socket
 }

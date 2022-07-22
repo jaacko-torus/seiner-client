@@ -20,5 +20,8 @@ export default defineConfig({
 			include: ["src", "package.json", "tsconfig.json"]
 		},
 		minify: false,
-	}
+	},
+	assetsInclude: [
+		"assets/**/*.{wav,svg}"
+	]
 })
