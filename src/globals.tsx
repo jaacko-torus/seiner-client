@@ -1,3 +1,4 @@
+// TODO: audio paths should be `./assets/<audio file>`, vite is not adding audio files to `dist`
 export const audio = {
 	["message-received"]: new Audio("./client/src/assets/message-received.wav"),
 	["poke"]: new Audio("./client/src/assets/poke.wav"),
