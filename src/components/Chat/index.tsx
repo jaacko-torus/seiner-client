@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import { useState } from "react"
 import MessagingArea from "../MessagingArea"
 import Message from "../Message"
@@ -11,7 +12,7 @@ const Chat = ({ username }: Args) => {
 	
 	return (
 		<Root>
-			<ChatArea>{messages.map(({ data }) => <Message {...data}/>)}</ChatArea>
+			<ChatArea>{messages.map(({ data }) => <Message key={uuidv4()} {...data}/>)}</ChatArea>
 			<MessagingArea sendData={e => socket.send(e)} />
 		</Root>
 	)

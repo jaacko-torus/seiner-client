@@ -1,6 +1,6 @@
 export const audio = {
-	["message-received"]: new Audio("assets/message-received.wav"),
-	["poke"]: new Audio("assets/poke.wav"),
+	["message-received"]: new Audio("./assets/message-received.wav"),
+	["poke"]: new Audio("./assets/poke.wav"),
 }
 
 export type Theme = "dark" | "light"

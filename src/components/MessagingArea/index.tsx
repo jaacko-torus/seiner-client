@@ -13,9 +13,9 @@ const MessagingArea = ({ sendData }: Args) => {
 		if (e.key === "Enter" && document.activeElement === ref.current) {
 			e.preventDefault()
 			
-			const trimmed_value = value.trim()
+			const trimmed_value = value.trim().split("\n")
 
-			if (trimmed_value.length !== 0) sendData(trimmed_value)
+			if (trimmed_value !== undefined) sendData(JSON.stringify(trimmed_value))
 
 			setValue(prev => "")
 		}

@@ -21,10 +21,12 @@
 	"dependencies": {
 		"@emotion/css": "^11.9.0",
 		"@emotion/react": "^11.9.3",
+		"@types/uuid": "^8.3.4",
 		"dayjs": "^1.11.3",
 		"no-darkreader": "^1.0.3",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"uuid": "^8.3.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.18.6",

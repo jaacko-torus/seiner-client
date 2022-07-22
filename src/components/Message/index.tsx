@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import { useEffect, useRef } from "react"
 import { Root, Heading, MessageBody, MessageHead, P } from "./styled"
 
@@ -13,7 +14,7 @@ const Message = ({ username, timestamp, messages }: Args) => {
 				<Heading>{username}</Heading> @ <Heading>{timestamp}</Heading>
 			</MessageHead>
 			<MessageBody>
-				{messages.map(message => <P>{message}</P>)}
+				{messages.map(message => <P key={uuidv4()}>{message}</P>)}
 			</MessageBody>
 		</Root>
 	)

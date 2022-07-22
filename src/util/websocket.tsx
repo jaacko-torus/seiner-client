@@ -70,6 +70,9 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 
 			switch (message.type) {
 				case "message":
+					console.log("message received")
+					console.log(message.data)
+				
 					const poked = (message.data.messages.at(0)?.match(new RegExp(`\/poke ${username}`))?.length ?? 0) === 1
 					const messageNotFromThisUser = message.data.username !== username
 
@@ -83,14 +86,14 @@ export function createWebsocket(username: string, setMessages: (value: (prevStat
 				case "user_left":
 				case "user_joined":
 					const action = { user_left: "left", user_joined: "joined" }
-					return {
+					return setMessages(messages => [...messages, {
 						type: message.type,
 						data: {
 							timestamp: message.data.timestamp,
 							username: "[server]",
 							messages: [`${message.data.username} has ${action[message.type]}`]
 						}
-					}
+					}])
 				default:
 					// Will never happen
 					return
