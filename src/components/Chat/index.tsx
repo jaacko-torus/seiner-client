@@ -13,7 +13,7 @@ const Chat = ({ username }: Args) => {
 	return (
 		<Root>
 			<ChatArea>{messages.map(({ data }) => <Message key={uuidv4()} {...data}/>)}</ChatArea>
-			<MessagingArea sendData={e => socket.send(e)} />
+			<MessagingArea sendData={async e => (await socket).send(e)} />
 		</Root>
 	)
 }

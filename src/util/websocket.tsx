@@ -71,9 +71,6 @@ export async function createWebsocket(username: string, setMessages: (value: (pr
 
 			switch (message.type) {
 				case "message":
-					console.log("message received")
-					console.log(message.data)
-				
 					const poked = (message.data.messages.at(0)?.match(new RegExp(`\/poke ${username}`))?.length ?? 0) === 1
 					const messageNotFromThisUser = message.data.username !== username
 
@@ -138,9 +135,9 @@ export async function createWebsocket(username: string, setMessages: (value: (pr
 	application.setRenderOriginComments(false)
 	application.setRenderFormatted(false)
 	
+	// properties I care about
 	type ApplicationJSON = {seiner: { mode: "dev" | "prod", modes: {[key in "dev" | "prod"]:{port:{ws: number}}}}}
 	const applicationJSON: ApplicationJSON | undefined = JSON.parse(application.toJSON() ?? "undefined") ?? undefined
-	console.log(applicationJSON)
 	const mode: "dev" | "prod" | undefined = applicationJSON?.seiner.mode
 	const portWS = (mode && applicationJSON?.seiner.modes[mode].port.ws) ?? 8081
 
